@@ -2,7 +2,7 @@
 
 A simple task manager API inspired by Unix commands, built with FastAPI.
 
-# Features
+## Features
 
 - Create tasks (like `fork`)
 - List all tasks (like `ls`)
