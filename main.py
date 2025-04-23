@@ -64,7 +64,6 @@ def row_to_task(row):
 # API Endpoints
 @app.post("/tasks", response_model=Task, status_code=status.HTTP_201_CREATED)
 def create_task(task_data: TaskCreate):
-    """Create a new task that completes after 10 seconds"""
     task_id = str(uuid.uuid4())
     created_at = datetime.now().isoformat()
     
@@ -105,7 +104,6 @@ def create_task(task_data: TaskCreate):
 
 @app.get("/tasks", response_model=List[Task])
 def list_tasks(status: Optional[str] = None, limit: Optional[int] = None):
-    """List all tasks (like ls)"""
     conn = get_db_connection()
     query = "SELECT * FROM tasks"
     params = []
@@ -127,7 +125,6 @@ def list_tasks(status: Optional[str] = None, limit: Optional[int] = None):
 
 @app.get("/tasks/{task_id}", response_model=Task)
 def get_task(task_id: str):
-    """Get details of a specific task"""
     conn = get_db_connection()
     task = conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
     conn.close()
@@ -139,7 +136,6 @@ def get_task(task_id: str):
 
 @app.patch("/tasks/{task_id}", response_model=Task)
 def update_task(task_id: str, task_data: TaskUpdate):
-    """Update task status or name"""
     conn = get_db_connection()
     task = conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
     
@@ -173,7 +169,6 @@ def update_task(task_id: str, task_data: TaskUpdate):
 
 @app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(task_id: str):
-    """Delete a task"""
     conn = get_db_connection()
     result = conn.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
     conn.commit()
