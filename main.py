@@ -10,8 +10,7 @@ import threading
 
 app = FastAPI(
     title="Unix-Inspired Task Manager API",
-    description="A simple task manager inspired by Unix commands",
-    version="0.1.0"
+    description="A simple task manager inspired by Unix commands"
 )
 
 # Database setup
