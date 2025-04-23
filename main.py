@@ -5,6 +5,8 @@ from typing import Optional, List
 from datetime import datetime
 import sqlite3
 import uuid
+import time
+import threading
 
 app = FastAPI(
     title="Unix-Inspired Task Manager API",
@@ -63,10 +65,11 @@ def row_to_task(row):
 # API Endpoints
 @app.post("/tasks", response_model=Task, status_code=status.HTTP_201_CREATED)
 def create_task(task_data: TaskCreate):
-    """Create a new task (like fork)"""
+    """Create a new task that completes after 10 seconds"""
     task_id = str(uuid.uuid4())
     created_at = datetime.now().isoformat()
     
+    # Initial task object with "running" status
     task = {
         "id": task_id,
         "name": task_data.name,
@@ -75,6 +78,7 @@ def create_task(task_data: TaskCreate):
         "completed_at": None
     }
     
+    # Save to database immediately
     conn = get_db_connection()
     conn.execute(
         "INSERT INTO tasks (id, name, status, created_at, completed_at) VALUES (?, ?, ?, ?, ?)",
@@ -82,6 +86,21 @@ def create_task(task_data: TaskCreate):
     )
     conn.commit()
     conn.close()
+    
+    # Start background thread to complete the task after 20 seconds
+    def complete_task():
+        time.sleep(20)  # Wait 20 seconds
+        completed_at = datetime.now().isoformat()
+        
+        conn = get_db_connection()
+        conn.execute(
+            "UPDATE tasks SET status = ?, completed_at = ? WHERE id = ?",
+            ("completed", completed_at, task_id)
+        )
+        conn.commit()
+        conn.close()
+    
+    threading.Thread(target=complete_task).start()
     
     return task
 
